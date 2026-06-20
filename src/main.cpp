@@ -148,6 +148,36 @@ void keyboard(unsigned char key, int x, int y) {
         isDrawing = false;
         std::cout << "Switched Tool Mode --> SELECT" << std::endl;
     }
+
+    // --- Portion 5: Mathematical Affine Transformations ---
+    if (currentTool == TOOL_SELECT && selectedShapeIndex != -1) {
+        float moveSpeed = 5.0f;
+        float angleSpeed = 5.0f;
+        float scaleSpeed = 0.1f;
+        
+        switch (key) {
+            // Translation
+            case 'w': shapes[selectedShapeIndex].ty -= moveSpeed; break;
+            case 's': shapes[selectedShapeIndex].ty += moveSpeed; break;
+            case 'a': shapes[selectedShapeIndex].tx -= moveSpeed; break;
+            case 'd': shapes[selectedShapeIndex].tx += moveSpeed; break;
+            // Rotation
+            case 'q': shapes[selectedShapeIndex].angle -= angleSpeed; break;
+            case 'e': shapes[selectedShapeIndex].angle += angleSpeed; break;
+            // Scaling
+            case '+': 
+            case '=': 
+                shapes[selectedShapeIndex].sx += scaleSpeed; 
+                shapes[selectedShapeIndex].sy += scaleSpeed; 
+                break;
+            case '-': 
+            case '_':
+                shapes[selectedShapeIndex].sx -= scaleSpeed; 
+                shapes[selectedShapeIndex].sy -= scaleSpeed; 
+                break;
+        }
+    }
+    
     glutPostRedisplay();
 }
 
