@@ -12,6 +12,7 @@ std::vector<Shape> shapes;
 ToolMode currentTool = TOOL_LINE;
 ColorRGB currentColor(0.0f, 0.0f, 0.0f); // Default draw color is black
 bool isDrawing = false;
+int selectedShapeIndex = -1; // -1 means no shape is selected
 Shape currentShape(TOOL_LINE, currentColor);
 Point2D mousePos(0, 0);
 
@@ -66,7 +67,22 @@ void reshape(int width, int height) {
 
 void mouse(int button, int state, int x, int y) {
     if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN) {
-        if (!isDrawing) {
+        if (currentTool == TOOL_SELECT) {
+            // Unselect all shapes first
+            for (auto& shape : shapes) shape.isSelected = false;
+            selectedShapeIndex = -1;
+
+            // Iterate backwards to select the shape drawn most recently (top layer)
+            for (int i = shapes.size() - 1; i >= 0; --i) {
+                if (shapes[i].hitTest(x, y)) {
+                    shapes[i].isSelected = true;
+                    selectedShapeIndex = i;
+                    std::cout << "Selected Shape index: " << i << std::endl;
+                    break; // Only select one shape per click
+                }
+            }
+        } 
+        else if (!isDrawing) {
             // Initiate a new shape
             isDrawing = true;
             currentShape = Shape(currentTool, currentColor);
@@ -126,6 +142,11 @@ void keyboard(unsigned char key, int x, int y) {
         currentTool = TOOL_POLYGON;
         isDrawing = false;
         std::cout << "Switched Tool Mode --> POLYGON" << std::endl;
+    }
+    else if (key == '4') {
+        currentTool = TOOL_SELECT;
+        isDrawing = false;
+        std::cout << "Switched Tool Mode --> SELECT" << std::endl;
     }
     glutPostRedisplay();
 }
